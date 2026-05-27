@@ -1,4 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
+﻿const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcryptjs");
 
 const prisma = new PrismaClient();
@@ -78,18 +78,18 @@ async function main() {
       name: "Délégué de l'année",
       slug: "delegate-of-the-year",
       nominees: [
-        { name: "Lamine Traoré", description: "Président de promo" },
-        { name: "Aïcha Wade", description: "Communication" },
-        { name: "Kofi Dieng", description: "Trésorier" },
+        { name: "Lamine Traoré", description: "Président de promo", photo: null },
+        { name: "Aïcha Wade", description: "Communication", photo: null },
+        { name: "Kofi Dieng", description: "Trésorier", photo: null },
       ],
     },
     {
       name: "Professeur de l'année",
       slug: "teacher-of-the-year",
       nominees: [
-        { name: "Dr Ibrahim Touré", description: "Informatique" },
-        { name: "Pr Marie Ndiaye", description: "Économie" },
-        { name: "Dr Jean Koffi", description: "Droit" },
+        { name: "Dr Ibrahim Touré", description: "Informatique", photo: null },
+        { name: "Pr Marie Ndiaye", description: "Économie", photo: null },
+        { name: "Dr Jean Koffi", description: "Droit", photo: null },
       ],
     },
   ];
@@ -107,7 +107,7 @@ async function main() {
         data: {
           name: nom.name,
           description: nom.description,
-          photo: nom.photo ?? null,
+          photo: (nom as any).photo || null,
           categoryId: category.id,
         },
       });
