@@ -1,9 +1,9 @@
-generator client {
+﻿generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -11,7 +11,7 @@ model User {
   id        String   @id @default(cuid())
   email     String   @unique
   password  String
-  role      Role     @default("STUDENT")
+  role      Role     @default(STUDENT)
   hasVoted  Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
