@@ -23,8 +23,13 @@ const signature = Mrs_Saint_Delafield({
 });
 
 export const metadata: Metadata = {
-  title: "Awards Universitaires 2026",
+  title: "Awards LBS 2026",
   description: "Experience de vote premium pour la ceremonie du 13 Juin 2026.",
+  icons: {
+    icon: "/icon.png",
+    shortcut: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({

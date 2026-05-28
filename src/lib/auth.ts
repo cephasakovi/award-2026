@@ -39,6 +39,20 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        if (user.email.toLowerCase() === "admin@lomebs.com" && user.role !== "ADMIN") {
+          await prisma.user.update({
+            where: { id: user.id },
+            data: { role: "ADMIN" },
+          });
+          user.role = "ADMIN";
+        }
+
+        const isLbsDomain = user.email.toLowerCase().endsWith("@lomebs.com");
+        const isAdmin = user.role === "ADMIN";
+        if (!isLbsDomain && !isAdmin) {
+          return null;
+        }
+
         return {
           id: user.id,
           email: user.email,

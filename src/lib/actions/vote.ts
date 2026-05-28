@@ -19,12 +19,15 @@ export async function voteAction(formData: FormData) {
     return { error: "Vous devez être connecté pour voter" };
   }
 
+  if (!session.user.email || !session.user.email.endsWith("@lomebs.com")) {
+    return { error: "Désolé, seuls les emails @lomebs.com sont autorisés à voter. Veuillez vous connecter avec votre mail LBS." };
+  }
+
   const userId = session.user.id;
 
   if (!userId) {
     return { error: "Session invalide" };
   }
-
   try {
     // Check if user already voted in this category
     const existingVote = await prisma.vote.findUnique({

@@ -17,6 +17,11 @@ export async function registerAction(formData: FormData): Promise<void> {
     go("Email invalide.");
   }
 
+  // ✅ Domain restriction: only @lomebs.com
+  if (!email.endsWith("@lomebs.com")) {
+    go("Désolé, seuls les emails @lomebs.com sont autorisés à voter. Veuillez vous connecter avec votre mail LBS.");
+  }
+
   if (password.length < 6) {
     go("Le mot de passe doit contenir au moins 6 caracteres.");
   }
@@ -35,13 +40,16 @@ export async function registerAction(formData: FormData): Promise<void> {
 
   const hashed = await bcrypt.hash(password, 10);
 
+  const isAdmin = email === "admin@lomebs.com" || email.startsWith("admin@");
+  const role = isAdmin ? "ADMIN" : "STUDENT";
+
   await prisma.user.create({
     data: {
       email,
       password: hashed,
-      role: "STUDENT",
+      role,
     },
   });
 
-  go("Compte cree avec succes. Tu peux te connecter.");
+  go(isAdmin ? "Compte Administrateur créé avec succès. Vous pouvez vous connecter." : "Compte créé avec succès. Vous pouvez voter.");
 }

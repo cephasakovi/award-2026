@@ -1,8 +1,5 @@
 "use server";
 
-import { promises as fs } from "fs";
-import path from "path";
-import { randomUUID } from "crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -41,23 +38,19 @@ async function saveUploadedPhoto(file: File | null | undefined) {
   }
 
   const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
-  if (!allowedTypes.has(file.type)) {
-    throw new Error("Format de photo non autorise. Utilise JPG, PNG ou WEBP.");
+  if (!file.type || !allowedTypes.has(file.type)) {
+    throw new Error("Format de photo non autorisé. Utilisez JPG, PNG ou WEBP.");
   }
-
-  const uploadsDir = path.join(process.cwd(), "public", "uploads", "nominees");
-  await fs.mkdir(uploadsDir, { recursive: true });
+  const maxSizeBytes = 4 * 1024 * 1024;
+  if (file.size > maxSizeBytes) {
+    throw new Error("Image trop lourde. Taille maximale: 4 MB.");
+  }
 
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
-  const extension =
-    file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
-  const filename = `${Date.now()}-${randomUUID()}.${extension}`;
-  const fullPath = path.join(uploadsDir, filename);
+  const base64 = buffer.toString("base64");
 
-  await fs.writeFile(fullPath, buffer);
-
-  return `/uploads/nominees/${filename}`;
+  return `data:${file.type};base64,${base64}`;
 }
 
 export async function createCategoryAction(formData: FormData): Promise<void> {

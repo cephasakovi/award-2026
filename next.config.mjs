@@ -1,16 +1,14 @@
-﻿import { execSync } from 'child_process';
-
-// Force Prisma generation during Next.js initialization
-if (process.env.NODE_ENV === 'production') {
-  console.log('--- FORCING PRISMA GENERATE IN CONFIG ---');
-  execSync('npx prisma generate');
-}
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   typescript: { ignoreBuildErrors: true },
   eslint: { ignoreDuringBuilds: true },
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "8mb",
+    },
+  },
   images: {
+    // Allow external images from Unsplash
     remotePatterns: [
       {
         protocol: 'https',
@@ -18,6 +16,9 @@ const nextConfig = {
         pathname: '**',
       },
     ],
+    // Allow base64 data URLs (for nominees photos stored in database)
+    dangerouslyAllowSVG: false,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
 };
 

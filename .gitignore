@@ -36,7 +36,7 @@ prisma/dev.db-journal
 *.db
 
 # uploads generated from admin
-public/uploads/
+# public/uploads/ (Allowing images for production)
 
 # vercel
 .vercel

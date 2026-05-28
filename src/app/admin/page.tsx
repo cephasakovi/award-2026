@@ -4,6 +4,7 @@ import { Prisma } from "@prisma/client";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import ExcelExport from "@/components/ui/excel-export";
 import {
   createCategoryAction,
   createNomineeAction,
@@ -46,7 +47,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
     );
   }
 
-  const [categoriesRaw, nomineesRaw] = await Promise.all([
+  const [categoriesRaw, nomineesRaw, nomineesWithVotes] = await Promise.all([
     prisma.category.findMany({
       orderBy: { createdAt: "asc" },
     }),
@@ -54,7 +55,22 @@ export default async function AdminPage({ searchParams }: PageProps) {
       include: { category: true },
       orderBy: { createdAt: "desc" },
     }),
+    prisma.nominee.findMany({
+      include: {
+        category: true,
+        _count: {
+          select: { votes: true },
+        },
+      },
+      orderBy: { category: { name: "asc" } },
+    }),
   ]);
+
+  const exportData = nomineesWithVotes.map((n) => ({
+    nomineeName: n.name,
+    categoryName: n.category.name,
+    votesCount: n._count.votes,
+  }));
 
   const categories = categoriesRaw as CategoryRecord[];
   const nominees = nomineesRaw as NomineeRecord[];
@@ -75,12 +91,15 @@ export default async function AdminPage({ searchParams }: PageProps) {
               Gère les catégories, les nominés, leurs photos et leur classement.
             </p>
           </div>
-          <a
-            href="/results"
-            className="inline-flex w-fit items-center justify-center rounded-full border border-ivory/10 px-5 py-3 text-[11px] uppercase tracking-[0.3em] text-ivory/70 transition-colors hover:border-gold/30 hover:text-gold"
-          >
-            Voir les résultats
-          </a>
+          <div className="flex flex-wrap items-center gap-4">
+            <ExcelExport data={exportData} />
+            <a
+              href="/results"
+              className="inline-flex w-fit items-center justify-center rounded-full border border-ivory/10 px-5 py-3 text-[11px] uppercase tracking-[0.3em] text-ivory/70 transition-colors hover:border-gold/30 hover:text-gold"
+            >
+              Voir les résultats
+            </a>
+          </div>
         </div>
       </section>
 
@@ -277,12 +296,21 @@ export default async function AdminPage({ searchParams }: PageProps) {
               <div key={nominee.id} className="overflow-hidden rounded-2xl border border-ivory/10 bg-black/30">
                 <div className="relative aspect-[4/3] bg-black">
                   {nominee.photo ? (
-                    <Image
-                      src={nominee.photo}
-                      alt={nominee.name}
-                      fill
-                      className="object-cover"
-                    />
+                    nominee.photo.startsWith("data:") ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={nominee.photo}
+                        alt={nominee.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <Image
+                        src={nominee.photo}
+                        alt={nominee.name}
+                        fill
+                        className="object-cover"
+                      />
+                    )
                   ) : (
                     <div className="flex h-full items-center justify-center text-ivory/20">
                       Pas de photo

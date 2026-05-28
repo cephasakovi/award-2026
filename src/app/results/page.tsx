@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import ExcelExport from "@/components/ui/excel-export";
 
 export default async function ResultsPage() {
   const session = await getServerSession(authOptions);
@@ -33,6 +34,14 @@ export default async function ResultsPage() {
     );
   }, 0);
 
+  const exportData = categories.flatMap((category) =>
+    category.nominees.map((nominee) => ({
+      nomineeName: nominee.name,
+      categoryName: category.name,
+      votesCount: nominee._count.votes,
+    })),
+  );
+
   return (
     <main className="min-h-screen bg-black text-ivory">
       <section className="border-b border-gold/10 bg-white/[0.02]">
@@ -49,6 +58,7 @@ export default async function ResultsPage() {
             <a href="/login" className="rounded-full border border-gold/20 px-4 py-2 hover:bg-gold hover:text-black">
               Connexion
             </a>
+            <ExcelExport data={exportData} />
           </div>
         </div>
       </section>

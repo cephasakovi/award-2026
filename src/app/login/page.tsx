@@ -23,8 +23,15 @@ function LoginForm() {
     setError("");
 
     try {
+      const normalizedEmail = email.trim().toLowerCase();
+      if (!normalizedEmail.endsWith("@lomebs.com")) {
+        setError("Veuillez utiliser votre mail LBS (@lomebs.com).");
+        setLoading(false);
+        return;
+      }
+
       const res = await signIn("credentials", {
-        email,
+        email: normalizedEmail,
         password,
         redirect: false,
       });
@@ -58,6 +65,9 @@ function LoginForm() {
         <p className="text-ivory/40 text-[10px] uppercase tracking-[0.2em] text-center">
           Accedez a votre espace de vote
         </p>
+        <p className="mt-3 text-center text-[10px] text-gold/70">
+          Connexion reservee aux comptes @lomebs.com
+        </p>
       </div>
 
       {infoMessage ? (
@@ -76,6 +86,7 @@ function LoginForm() {
             required
             className="w-full bg-white/5 border border-ivory/10 px-4 py-3 text-ivory focus:outline-none focus:border-gold/50 transition-colors"
             placeholder="votre@email.com"
+            pattern="^[a-zA-Z0-9._%+-]+@lomebs\.com$"
           />
         </div>
         <div>

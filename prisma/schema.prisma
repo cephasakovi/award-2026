@@ -54,6 +54,14 @@ model Vote {
   @@unique([userId, categoryId])
 }
 
+model ExportSnapshot {
+  id          String   @id @default(cuid())
+  fileName    String   @unique
+  csvContent  String
+  totalVotes  Int
+  createdAt   DateTime @default(now())
+}
+
 enum Role {
   STUDENT
   ADMIN

@@ -29,6 +29,9 @@ export default function RegisterPage() {
             <p className="text-ivory/40 text-[10px] uppercase tracking-[0.2em] text-center">
               Cree un compte pour voter
             </p>
+            <p className="mt-3 text-center text-[10px] text-gold/70">
+              Inscription reservee aux comptes @lomebs.com
+            </p>
           </div>
 
           <form action={registerAction} className="space-y-6">
@@ -40,6 +43,7 @@ export default function RegisterPage() {
                 required
                 className="w-full bg-white/5 border border-ivory/10 px-4 py-3 text-ivory focus:outline-none focus:border-gold/50 transition-colors"
                 placeholder="votre@email.com"
+                pattern="^[a-zA-Z0-9._%+-]+@lomebs\.com$"
               />
             </div>
 
